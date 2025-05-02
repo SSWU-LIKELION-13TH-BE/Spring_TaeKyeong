@@ -21,8 +21,18 @@ public class CalculatorController {
         return calculatorService.add(request.getNumber1(),request.getNumber2());
     }
 
+    @GetMapping("/minus")
+    public int minusTwoNumbers(CalculatorAddRequest request) {
+        return calculatorService.minus(request.getNumber1(),request.getNumber2());
+    }
+
     @PostMapping("/multiply")
     public int multiplyTwoNumbers(@RequestBody CalculatorMultiplyRequest request) {
         return calculatorService.multiply(request.getNumber1(), request.getNumber2());
+    }
+
+    @PostMapping("/division")
+    public int divisionTwoNumbers(@RequestBody CalculatorMultiplyRequest request) {
+        return calculatorService.division(request.getNumber1(), request.getNumber2());
     }
 }
