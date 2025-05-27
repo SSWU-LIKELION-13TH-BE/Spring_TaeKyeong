@@ -1,9 +1,6 @@
 package com.example.week6.controller.user;
 
-import com.example.week6.dto.user.UserInfoResponseDTO;
-import com.example.week6.dto.user.UserLoginRequestDTO;
-import com.example.week6.dto.user.UserLoginResponseDTO;
-import com.example.week6.dto.user.UserSignupRequestDTO;
+import com.example.week6.dto.user.*;
 import com.example.week6.entity.user.User;
 import com.example.week6.security.JwtTokenProvider;
 import com.example.week6.service.user.UserService;
@@ -47,4 +44,24 @@ public class UserController {
         UserInfoResponseDTO userInfo = userService.getMyInfo(userId);
         return ResponseEntity.ok(userInfo);
     }
+
+    // 비밀번호 변경
+    // UserController.java
+    @PatchMapping("/password")
+    public ResponseEntity<String> changePassword(@RequestBody UserPasswordChangeRequestDTO requestDTO,
+                                                 HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
+        }
+
+        String userId = jwtTokenProvider.getUserId(token);
+        try {
+            userService.changePassword(userId, requestDTO);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

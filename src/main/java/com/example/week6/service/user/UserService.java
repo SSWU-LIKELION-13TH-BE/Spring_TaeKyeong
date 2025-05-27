@@ -1,9 +1,6 @@
 package com.example.week6.service.user;
 
-import com.example.week6.dto.user.UserInfoResponseDTO;
-import com.example.week6.dto.user.UserLoginResponseDTO;
-import com.example.week6.dto.user.UserSignupRequestDTO;
-import com.example.week6.dto.user.UserLoginRequestDTO;
+import com.example.week6.dto.user.*;
 import com.example.week6.entity.user.User;
 import com.example.week6.repository.User.UserRepository;
 import com.example.week6.security.JwtTokenProvider;
@@ -58,4 +55,25 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException("User not found : " + userId));
         return new UserInfoResponseDTO(user.getUserId(), user.getName(), user.getProfileImage());
     }
+
+    // 비밀번호 바꾸기
+    public void changePassword(String userId, UserPasswordChangeRequestDTO requestDTO) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        // 예외 처리 1: 현재 비밀번호 일치 확인
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 예외 처리 2: 새 비밀번호 확인 불일치
+        if (!requestDTO.getNewPassword().equals(requestDTO.getConfirmPassword())) {
+            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호 암호화 후 저장
+        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+        userRepository.save(user);
+    }
+
 }
