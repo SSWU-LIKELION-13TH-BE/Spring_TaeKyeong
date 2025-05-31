@@ -1,7 +1,6 @@
 package com.example.week6.controller.user;
 
 import com.example.week6.dto.user.*;
-import com.example.week6.entity.user.User;
 import com.example.week6.security.JwtTokenProvider;
 import com.example.week6.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 @RestController
- @RequestMapping("/api/users")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;

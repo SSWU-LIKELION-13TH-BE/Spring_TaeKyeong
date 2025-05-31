@@ -33,8 +33,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // api/user/me 는 인증 후 접근 가능하도록 함
+                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
                         .requestMatchers("/api/users/login", "/api/users/signup").permitAll()
                         .requestMatchers("/api/user/me").authenticated()
+                        .requestMatchers("/test/**", "/api/calculator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
