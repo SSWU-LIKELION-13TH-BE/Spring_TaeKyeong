@@ -1,9 +1,12 @@
 package com.example.week6.controller.user;
 
+import com.example.week6.apiPayload.code.SuccessStatus;
+import com.example.week6.apiPayload.dto.ApiResponse;
 import com.example.week6.dto.user.*;
 import com.example.week6.security.JwtTokenProvider;
 import com.example.week6.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -47,20 +50,17 @@ public class UserController {
     // 비밀번호 변경
     // UserController.java
     @PatchMapping("/password")
-    public ResponseEntity<String> changePassword(@RequestBody UserPasswordChangeRequestDTO requestDTO,
+    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody UserPasswordChangeRequestDTO requestDTO,
                                                  HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.onFailure("UNAUTHORIZED", "유효하지 않은 토큰입니다.", null));
         }
 
         String userId = jwtTokenProvider.getUserId(token);
-        try {
             userService.changePassword(userId, requestDTO);
-            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            return ResponseEntity.ok(ApiResponse.of(SuccessStatus._OK, "비밀번호가 변경되었습니다."));
+
     }
 
 }

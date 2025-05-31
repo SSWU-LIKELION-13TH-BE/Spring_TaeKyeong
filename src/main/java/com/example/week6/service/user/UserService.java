@@ -6,6 +6,7 @@ import com.example.week6.dto.user.*;
 import com.example.week6.entity.user.User;
 import com.example.week6.repository.User.UserRepository;
 import com.example.week6.security.JwtTokenProvider;
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -75,12 +76,12 @@ public class UserService implements UserDetailsService {
 
         // 예외 처리 1: 현재 비밀번호 일치 확인
         if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            throw new GeneralException(ErrorStatus.PASSWORD_MISMATCH);
         }
 
         // 예외 처리 2: 새 비밀번호 확인 불일치
         if (!requestDTO.getNewPassword().equals(requestDTO.getConfirmPassword())) {
-            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+            throw new GeneralException(ErrorStatus.PASSWORD_MISMATCH);
         }
 
         // 비밀번호 암호화 후 저장
